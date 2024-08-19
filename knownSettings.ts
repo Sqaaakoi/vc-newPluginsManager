@@ -1,0 +1,79 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2024 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import { DataStore } from "@api/index";
+import { Settings } from "@api/Settings";
+
+import plugins from "~plugins";
+
+export type KnownPluginSettingsMap = Map<string, Set<string>>;
+
+type PluginSettings = {
+    [setting: string]: any;
+    enabled?: boolean;
+};
+
+export const KNOWN_PLUGINS_LEGACY_DATA_KEY = "NewPluginsManager_KnownPlugins";
+export const KNOWN_SETTINGS_DATA_KEY = "NewPluginsManager_KnownSettings";
+
+function getSettingsSetForPlugin(plugin: string): Set<string> {
+    const settings = Settings.plugins[plugin] || {};
+    return new Set(Object.keys(settings).filter(setting => setting !== "enabled"));
+}
+
+function getCurrentSettings(pluginList: string[]): KnownPluginSettingsMap {
+    return new Map(pluginList.map(name => [
+        name,
+        getSettingsSetForPlugin(name)
+    ]));
+}
+
+export async function getKnownSettings(): Promise<KnownPluginSettingsMap> {
+    let map = await DataStore.get(KNOWN_SETTINGS_DATA_KEY) as KnownPluginSettingsMap;
+    if (map === undefined) {
+        const knownPlugins = await DataStore.get(KNOWN_PLUGINS_LEGACY_DATA_KEY) ?? [] as string[];
+        DataStore.del(KNOWN_PLUGINS_LEGACY_DATA_KEY);
+        const Plugins = [...Object.keys(plugins), ...knownPlugins];
+        map = getCurrentSettings(Plugins);
+        DataStore.set(KNOWN_SETTINGS_DATA_KEY, map);
+    }
+    return map;
+}
+
+export async function getNewSettings(): Promise<KnownPluginSettingsMap> {
+    const map = getCurrentSettings(Object.keys(plugins));
+    const knownSettings = await getKnownSettings();
+    map.forEach((settings, plugin) => {
+        const filteredSettings = [...settings].filter(setting => !knownSettings.get(plugin)?.has(setting));
+        if (filteredSettings.length === 0 && knownSettings.has(plugin)) return map.delete(plugin);
+        map.set(plugin, new Set(filteredSettings));
+    });
+    return map;
+}
+
+export async function getKnownPlugins(): Promise<Set<string>> {
+    const knownSettings = await getKnownSettings();
+    return new Set(knownSettings.keys());
+}
+
+export async function getNewPlugins(): Promise<Set<string>> {
+    const currentPlugins = Object.keys(plugins);
+    const knownPlugins = await getKnownPlugins();
+    return new Set(currentPlugins.filter(p => !knownPlugins.has(p)));
+}
+
+export async function writeKnownSettings() {
+    const currentSettings = getCurrentSettings(Object.keys(plugins));
+    const knownSettings = await getKnownSettings();
+    const allSettings = new Map();
+    new Set([...currentSettings.keys(), ...knownSettings.keys()]).forEach(plugin => {
+        allSettings.set(plugin, new Set([
+            ...(currentSettings.get(plugin) || []),
+            ...(knownSettings.get(plugin) || [])
+        ]));
+    });
+    await DataStore.set(KNOWN_SETTINGS_DATA_KEY, allSettings);
+}
