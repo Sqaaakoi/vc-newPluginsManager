@@ -11,11 +11,6 @@ import plugins from "~plugins";
 
 export type KnownPluginSettingsMap = Map<string, Set<string>>;
 
-type PluginSettings = {
-    [setting: string]: any;
-    enabled?: boolean;
-};
-
 export const KNOWN_PLUGINS_LEGACY_DATA_KEY = "NewPluginsManager_KnownPlugins";
 export const KNOWN_SETTINGS_DATA_KEY = "NewPluginsManager_KnownSettings";
 
@@ -35,7 +30,7 @@ export async function getKnownSettings(): Promise<KnownPluginSettingsMap> {
     let map = await DataStore.get(KNOWN_SETTINGS_DATA_KEY) as KnownPluginSettingsMap;
     if (map === undefined) {
         const knownPlugins = await DataStore.get(KNOWN_PLUGINS_LEGACY_DATA_KEY) ?? [] as string[];
-        DataStore.del(KNOWN_PLUGINS_LEGACY_DATA_KEY);
+        // DataStore.del(KNOWN_PLUGINS_LEGACY_DATA_KEY);
         const Plugins = [...Object.keys(plugins), ...knownPlugins];
         map = getCurrentSettings(Plugins);
         DataStore.set(KNOWN_SETTINGS_DATA_KEY, map);
@@ -48,7 +43,7 @@ export async function getNewSettings(): Promise<KnownPluginSettingsMap> {
     const knownSettings = await getKnownSettings();
     map.forEach((settings, plugin) => {
         const filteredSettings = [...settings].filter(setting => !knownSettings.get(plugin)?.has(setting));
-        if (filteredSettings.length === 0 && knownSettings.has(plugin)) return map.delete(plugin);
+        if (!filteredSettings.length) return map.delete(plugin);
         map.set(plugin, new Set(filteredSettings));
     });
     return map;
@@ -76,4 +71,15 @@ export async function writeKnownSettings() {
         ]));
     });
     await DataStore.set(KNOWN_SETTINGS_DATA_KEY, allSettings);
+}
+
+export async function debugWipeSomeData() {
+    const settings = await getKnownSettings();
+    settings.forEach((value, key) => {
+        if (Math.random() > 0.8) {
+            if (Math.random() > 0.5) return settings.set(key, new Set([...value].filter(() => Math.random() > 0.5)));
+            return settings.delete(key);
+        }
+    });
+    await DataStore.set(KNOWN_SETTINGS_DATA_KEY, settings);
 }
