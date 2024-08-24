@@ -172,7 +172,7 @@ function makeDependencyList(deps: string[]) {
 export async function openNewPluginsModal() {
     const newPlugins = await getNewPlugins();
     const newSettings = await getNewSettings();
-    if (newSettings.size && !hasSeen) {
+    if ((newPlugins.size || newSettings.size) && !hasSeen) {
         hasSeen = true;
         openModal(modalProps => (
             <NewPluginsModal
