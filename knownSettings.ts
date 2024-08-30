@@ -83,3 +83,11 @@ export async function debugWipeSomeData() {
     });
     await DataStore.set(KNOWN_SETTINGS_DATA_KEY, settings);
 }
+
+export async function editRawData(patcher: (data: KnownPluginSettingsMap) => (Promise<KnownPluginSettingsMap> | KnownPluginSettingsMap)) {
+    if (!patcher) return;
+    const map = await DataStore.get(KNOWN_SETTINGS_DATA_KEY) as KnownPluginSettingsMap;
+    const newMap = new Map(map);
+    await patcher(newMap);
+    await DataStore.set(KNOWN_SETTINGS_DATA_KEY, newMap ?? map);
+}

@@ -10,7 +10,7 @@ import { PluginCard } from "@components/PluginSettings";
 import { ChangeList } from "@utils/ChangeList";
 import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { useForceUpdater } from "@utils/react";
-import { Button, Flex, Forms, Parser, React, Text, Tooltip, useMemo } from "@webpack/common";
+import { Button, Flex, Forms, React, Text, Tooltip, useMemo } from "@webpack/common";
 import { JSX } from "react";
 
 import Plugins from "~plugins";
@@ -18,6 +18,10 @@ import Plugins from "~plugins";
 import { getNewPlugins, getNewSettings, KnownPluginSettingsMap, writeKnownSettings } from "./knownSettings";
 
 const cl = classNameFactory("vc-plugins-");
+
+import "./NewPluginsModal.css";
+
+import { Margins } from "@utils/index";
 
 let hasSeen = false;
 
@@ -133,14 +137,13 @@ function ContinueButton(props: { callback: (update: () => void) => void; changes
     const update = useForceUpdater();
     props.callback(update);
     return <Tooltip
+        tooltipClassName="vc-newPluginsManager-restart-tooltip"
         text={<>
             The following plugins require a restart:
-            <div>{props.changes.map((s, i) => (
-                <>
-                    {i > 0 && ", "}
-                    {Parser.parse("`" + s + "`")}
-                </>
-            ))}</div>
+            <div className={Margins.bottom8} />
+            <ul className="vc-newPluginsManager-restart-list">
+                {props.changes.map(p => <li>{p}</li>)}
+            </ul>
         </>}
         shouldShow={props.changes.hasChanges}
     >
