@@ -10,6 +10,7 @@
     list-style: disc;
 }
 
+.vc-newPluginsManager-disable-wrapper,
 .vc-newPluginsManager-close > div {
     display: flex;
 }

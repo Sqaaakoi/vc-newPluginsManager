@@ -133,15 +133,17 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
                 />
             </Flex>
             <Flex direction={Flex.Direction.HORIZONTAL}>
-                <Checkbox
-                    type={Checkbox.Types.INVERTED}
-                    value={!settings?.plugins?.NewPluginsManager?.enabled}
-                    onChange={() => {
-                        Settings.plugins.NewPluginsManager.enabled = !settings?.plugins?.NewPluginsManager?.enabled;
-                    }}
-                >
-                    <Text>Don't show this again</Text>
-                </Checkbox>
+                <div className="vc-newPluginsManager-disable-wrapper">
+                    <Checkbox
+                        type={Checkbox.Types.INVERTED}
+                        value={!settings?.plugins?.NewPluginsManager?.enabled}
+                        onChange={() => {
+                            Settings.plugins.NewPluginsManager.enabled = !settings?.plugins?.NewPluginsManager?.enabled;
+                        }}
+                    >
+                        <Text>Don't show this again</Text>
+                    </Checkbox>
+                </div>
             </Flex>
         </ModalFooter>
     </ModalRoot>;
