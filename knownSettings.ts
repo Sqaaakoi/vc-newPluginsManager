@@ -5,7 +5,6 @@
  */
 
 import { DataStore } from "@api/index";
-import { Settings } from "@api/Settings";
 
 import plugins from "~plugins";
 
@@ -15,7 +14,7 @@ export const KNOWN_PLUGINS_LEGACY_DATA_KEY = "NewPluginsManager_KnownPlugins";
 export const KNOWN_SETTINGS_DATA_KEY = "NewPluginsManager_KnownSettings";
 
 function getSettingsSetForPlugin(plugin: string): Set<string> {
-    const settings = Settings.plugins[plugin] || {};
+    const settings = plugins[plugin]?.settings?.def || {};
     return new Set(Object.keys(settings).filter(setting => setting !== "enabled"));
 }
 
@@ -84,7 +83,7 @@ export async function debugWipeSomeData() {
     await DataStore.set(KNOWN_SETTINGS_DATA_KEY, settings);
 }
 
-export async function editRawData(patcher: (data: KnownPluginSettingsMap) => (Promise<KnownPluginSettingsMap> | KnownPluginSettingsMap)) {
+export async function editRawData(patcher: (data: KnownPluginSettingsMap) => (Promise<any> | any)) {
     if (!patcher) return;
     const map = await DataStore.get(KNOWN_SETTINGS_DATA_KEY) as KnownPluginSettingsMap;
     const newMap = new Map(map);

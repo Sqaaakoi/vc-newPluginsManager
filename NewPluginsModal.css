@@ -9,3 +9,7 @@
 .vc-newPluginsManager-restart-list li {
     list-style: disc;
 }
+
+.vc-newPluginsManager-close > div {
+    display: flex;
+}

@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { useSettings } from "@api/Settings";
+import "./NewPluginsModal.css";
+
+import { Settings, useSettings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import { PluginCard } from "@components/PluginSettings";
 import { ChangeList } from "@utils/ChangeList";
+import { classes, Margins } from "@utils/index";
 import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { useForceUpdater } from "@utils/react";
+import { findByPropsLazy } from "@webpack";
 import { Button, Flex, Forms, React, Text, Tooltip, useMemo } from "@webpack/common";
 import { JSX } from "react";
 
@@ -19,9 +23,7 @@ import { getNewPlugins, getNewSettings, KnownPluginSettingsMap, writeKnownSettin
 
 const cl = classNameFactory("vc-plugins-");
 
-import "./NewPluginsModal.css";
-
-import { Margins } from "@utils/index";
+const { Checkbox } = findByPropsLazy("FormItem", "Button");
 
 let hasSeen = false;
 
@@ -105,14 +107,15 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
 
     return <ModalRoot {...modalProps} size={ModalSize.MEDIUM} >
         <ModalHeader>
-            <Text variant="heading-lg/semibold">New Plugins and Settings ({[...plugins, ...requiredPlugins].length})</Text>
+            <Text variant="heading-lg/semibold" style={{ flexGrow: 1 }}>New Plugins and Settings ({[...plugins, ...requiredPlugins].length})</Text>
             <Tooltip text="Dismiss for this session">
                 {tooltipProps =>
-                    <ModalCloseButton
-                        {...tooltipProps}
-                        onClick={modalProps.onClose}
-                        className={cl("close")}
-                    />
+                    <div {...tooltipProps}>
+                        <ModalCloseButton
+                            onClick={modalProps.onClose}
+                            className={classes(cl("close"), "vc-newPluginsManager-close")}
+                        />
+                    </div>
                 }
             </Tooltip>
         </ModalHeader>
@@ -128,6 +131,17 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
                     changes={changes}
                     callback={(v: () => void) => updateContinueButton = v}
                 />
+            </Flex>
+            <Flex direction={Flex.Direction.HORIZONTAL}>
+                <Checkbox
+                    type={Checkbox.Types.INVERTED}
+                    value={!settings?.plugins?.NewPluginsManager?.enabled}
+                    onChange={() => {
+                        Settings.plugins.NewPluginsManager.enabled = !settings?.plugins?.NewPluginsManager?.enabled;
+                    }}
+                >
+                    <Text>Don't show this again</Text>
+                </Checkbox>
             </Flex>
         </ModalFooter>
     </ModalRoot>;
