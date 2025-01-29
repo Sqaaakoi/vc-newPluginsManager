@@ -11,7 +11,7 @@ import { classNameFactory } from "@api/Styles";
 import { PluginCard } from "@components/PluginSettings";
 import { ChangeList } from "@utils/ChangeList";
 import { classes, Margins } from "@utils/index";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
+import { closeModal, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { useForceUpdater } from "@utils/react";
 import { findByPropsLazy } from "@webpack";
 import { Button, Flex, Forms, React, Text, Tooltip, useMemo } from "@webpack/common";
@@ -20,6 +20,7 @@ import { JSX } from "react";
 import Plugins from "~plugins";
 
 import { getNewPlugins, getNewSettings, KnownPluginSettingsMap, writeKnownSettings } from "./knownSettings";
+import ErrorBoundary from "@components/ErrorBoundary";
 
 const cl = classNameFactory("vc-plugins-");
 
@@ -193,12 +194,12 @@ export async function openNewPluginsModal() {
     const newSettings = await getNewSettings();
     if ((newPlugins.size || newSettings.size) && !hasSeen) {
         hasSeen = true;
-        openModal(modalProps => (
+        const modalKey = openModal(modalProps => <ErrorBoundary noop onError={() => { closeModal(modalKey); }}>
             <NewPluginsModal
                 modalProps={modalProps}
                 newPlugins={newPlugins}
                 newSettings={newSettings}
             />
-        ));
+        </ErrorBoundary>);
     }
 }
