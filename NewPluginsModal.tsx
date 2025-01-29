@@ -13,7 +13,7 @@ import { ChangeList } from "@utils/ChangeList";
 import { classes, Margins } from "@utils/index";
 import { closeModal, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { useForceUpdater } from "@utils/react";
-import { findByPropsLazy } from "@webpack";
+import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
 import { Button, Flex, Forms, React, Text, Tooltip, useMemo } from "@webpack/common";
 import { JSX } from "react";
 
@@ -24,7 +24,7 @@ import ErrorBoundary from "@components/ErrorBoundary";
 
 const cl = classNameFactory("vc-plugins-");
 
-const { Checkbox } = findByPropsLazy("FormItem", "Button");
+const Checkbox = findComponentByCodeLazy(".checkboxWrapperDisabled:");
 
 let hasSeen = false;
 
@@ -136,7 +136,7 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
             <Flex direction={Flex.Direction.HORIZONTAL}>
                 <div className="vc-newPluginsManager-disable-wrapper">
                     <Checkbox
-                        type={Checkbox.Types.INVERTED}
+                        type="inverted"
                         value={!settings?.plugins?.NewPluginsManager?.enabled}
                         onChange={() => {
                             Settings.plugins.NewPluginsManager.enabled = !settings?.plugins?.NewPluginsManager?.enabled;
