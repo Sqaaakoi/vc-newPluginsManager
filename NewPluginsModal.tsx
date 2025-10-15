@@ -8,12 +8,13 @@ import "./NewPluginsModal.css";
 
 import { Settings, useSettings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
-import { PluginCard } from "@components/PluginSettings";
+import ErrorBoundary from "@components/ErrorBoundary";
+import { PluginCard } from "@components/settings/tabs/plugins/PluginCard";
 import { ChangeList } from "@utils/ChangeList";
 import { classes, Margins } from "@utils/index";
 import { closeModal, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { useForceUpdater } from "@utils/react";
-import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
+import { findComponentByCodeLazy } from "@webpack";
 import { Button, Flex, Forms, React, Text, Tooltip, useMemo } from "@webpack/common";
 import { JSX } from "react";
 
@@ -159,7 +160,7 @@ function ContinueButton(props: { callback: (update: () => void) => void; changes
             The following plugins require a restart:
             <div className={Margins.bottom8} />
             <ul className="vc-newPluginsManager-restart-list">
-                {props.changes.map(p => <li>{p}</li>)}
+                {props.changes.map(p => <li key={p}>{p}</li>)} </ul>
             </ul>
         </>}
         shouldShow={props.changes.hasChanges}
@@ -184,7 +185,7 @@ function makeDependencyList(deps: string[]) {
     return (
         <React.Fragment>
             <Forms.FormText>This plugin is required by:</Forms.FormText>
-            {deps.map((dep: string) => <Forms.FormText className={cl("dep-text")}>{dep}</Forms.FormText>)}
+            {deps.map((dep: string) => <Forms.FormText key={dep} className={cl("dep-text")}>{dep}</Forms.FormText>)}
         </React.Fragment>
     );
 }
