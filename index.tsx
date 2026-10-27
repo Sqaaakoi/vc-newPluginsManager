@@ -14,7 +14,13 @@ import { openNewPluginsModal } from "./NewPluginsModal";
 export default definePlugin({
     name: "NewPluginsManager",
     description: "Utility that notifies you when new plugins are added to Vencord",
-    authors: [Devs.Sqaaakoi],
+    authors: [
+        Devs.Sqaaakoi,
+        {
+            name: "benjas333",
+            id: 456577284464443394n,
+        },
+    ],
     enabledByDefault: true, // This is intentional.
     flux: {
         async POST_CONNECTION_OPEN() {
