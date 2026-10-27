@@ -145,7 +145,7 @@ function ContinueButton(props: { callback: (update: () => void) => void; changes
             The following plugins require a restart:
             <div className={Margins.bottom8} />
             <ul className="vc-newPluginsManager-restart-list">
-                {props.changes.map(p => <li key={p}>{p}</li>)}
+                {Array.from(props.changes, p => <li key={p}>{p}</li>)}
             </ul>
         </>}
         shouldShow={props.changes.hasChanges}
