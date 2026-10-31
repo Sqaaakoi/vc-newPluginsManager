@@ -7,7 +7,6 @@
 import "./NewPluginsModal.css";
 
 import { Settings, useSettings } from "@api/Settings";
-import { BaseText } from "@components/BaseText";
 import { Button } from "@components/Button";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Flex } from "@components/Flex";
@@ -119,7 +118,7 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
                             Settings.plugins.NewPluginsManager.enabled = !settings?.plugins?.NewPluginsManager?.enabled;
                         }}
                     >
-                        <BaseText>Don't show this again</BaseText>
+                        <Paragraph>Don't show this again</Paragraph>
                     </Checkbox>
                 </div>
                 <ContinueButton
