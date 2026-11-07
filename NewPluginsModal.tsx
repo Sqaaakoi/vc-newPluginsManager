@@ -8,13 +8,16 @@ import "./NewPluginsModal.css";
 
 import { Settings, useSettings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
-import { PluginCard } from "@components/PluginSettings";
+import { Button } from "@components/Button";
+import { Paragraph } from "@components/Paragraph";
+import { PluginCard } from "@components/settings/tabs/plugins/PluginCard";
+import { Text } from "@components/Text";
 import { ChangeList } from "@utils/ChangeList";
 import { classes, Margins } from "@utils/index";
 import { closeModal, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { useForceUpdater } from "@utils/react";
-import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
-import { Button, Flex, Forms, React, Text, Tooltip, useMemo } from "@webpack/common";
+import { Flex } from "@components/Flex";
+import { Checkbox, React, Tooltip, useMemo } from "@webpack/common";
 import { JSX } from "react";
 
 import Plugins from "~plugins";
@@ -24,7 +27,6 @@ import ErrorBoundary from "@components/ErrorBoundary";
 
 const cl = classNameFactory("vc-plugins-");
 
-const Checkbox = findComponentByCodeLazy(".checkboxWrapperDisabled:");
 
 let hasSeen = false;
 
@@ -108,7 +110,7 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
 
     return <ModalRoot {...modalProps} size={ModalSize.MEDIUM} >
         <ModalHeader>
-            <Text variant="heading-lg/semibold" style={{ flexGrow: 1 }}>New Plugins and Settings ({[...plugins, ...requiredPlugins].length})</Text>
+            <Text size="lg" weight="semibold" style={{ flexGrow: 1 }}>New Plugins and Settings ({[...plugins, ...requiredPlugins].length})</Text>
             <Tooltip text="Dismiss for this session">
                 {tooltipProps =>
                     <div {...tooltipProps}>
@@ -126,14 +128,14 @@ export function NewPluginsModal({ modalProps, newPlugins, newSettings }: { modal
             </div>
         </ModalContent>
         <ModalFooter>
-            <Flex direction={Flex.Direction.HORIZONTAL_REVERSE}>
+            <Flex flexDirection="row-reverse">
                 <ContinueButton
                     close={modalProps.onClose}
                     changes={changes}
                     callback={(v: () => void) => updateContinueButton = v}
                 />
             </Flex>
-            <Flex direction={Flex.Direction.HORIZONTAL}>
+            <Flex flexDirection="row">
                 <div className="vc-newPluginsManager-disable-wrapper">
                     <Checkbox
                         type="inverted"
@@ -159,7 +161,7 @@ function ContinueButton(props: { callback: (update: () => void) => void; changes
             The following plugins require a restart:
             <div className={Margins.bottom8} />
             <ul className="vc-newPluginsManager-restart-list">
-                {props.changes.map(p => <li>{p}</li>)}
+                {[...props.changes].map(p => <li>{p}</li>)}
             </ul>
         </>}
         shouldShow={props.changes.hasChanges}
@@ -167,7 +169,7 @@ function ContinueButton(props: { callback: (update: () => void) => void; changes
         {tooltipProps =>
             <Button
                 {...tooltipProps}
-                color={Button.Colors.GREEN}
+                variant="positive"
                 onClick={async () => {
                     await writeKnownSettings();
                     props.changes.hasChanges ? location.reload() : props.close();
@@ -183,8 +185,8 @@ function ContinueButton(props: { callback: (update: () => void) => void; changes
 function makeDependencyList(deps: string[]) {
     return (
         <React.Fragment>
-            <Forms.FormText>This plugin is required by:</Forms.FormText>
-            {deps.map((dep: string) => <Forms.FormText className={cl("dep-text")}>{dep}</Forms.FormText>)}
+            <Paragraph>This plugin is required by:</Paragraph>
+            {deps.map((dep: string) => <Paragraph className={cl("dep-text")}>{dep}</Paragraph>)}
         </React.Fragment>
     );
 }
